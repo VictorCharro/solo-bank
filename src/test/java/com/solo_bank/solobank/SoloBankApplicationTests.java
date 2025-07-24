@@ -1,4 +1,4 @@
-package com.solo_bank.Solo.Bank;
+package com.solo_bank.solobank;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
