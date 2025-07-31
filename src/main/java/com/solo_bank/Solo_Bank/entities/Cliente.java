@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -16,14 +17,15 @@ public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
+    private Long id;
 
+    @Column(name = "nome_completo")
     private String nomeCompleto;
 
-    @Column(unique = true)
-    private final Long cpf;
+    @Column(name = "cpf", unique = true)
+    private String cpf;
 
     @OneToOne
+    @JoinColumn(name = "conta_id")
     private Conta conta;
-
 }

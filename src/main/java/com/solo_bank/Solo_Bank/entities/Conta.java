@@ -1,34 +1,30 @@
 package com.solo_bank.Solo_Bank.entities;
 
 import com.solo_bank.Solo_Bank.enums.TipoConta;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Entity
 @Data
-@Table(name = "conta")
+@Table(name = "contas")
 public class Conta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
+    private Long id;
 
-    @Column(unique = true)
+    @Column(name = "numero_conta", unique = true)
     private int numeroDaConta;
 
+    @Column(name = "saldo")
     private BigDecimal saldo = BigDecimal.valueOf(0);
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_conta")
     private TipoConta tipo;
 
-    @OneToOne
-    Cliente cliente;
+    @OneToOne(mappedBy = "conta")
+    private Cliente cliente;
 }
