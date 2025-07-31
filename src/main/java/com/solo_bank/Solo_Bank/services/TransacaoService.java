@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +76,13 @@ public class TransacaoService {
         }
 
         return transacaoRepository.save(transacao);
+    }
+
+    public Optional<Transacao> buscarTransacaoPorId (Long id) {
+        return transacaoRepository.findById(id);
+    }
+
+    public void deletarTransacao(Long id) {
+        transacaoRepository.deleteById(id);
     }
 }
