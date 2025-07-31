@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -26,16 +27,31 @@ public class ContaService {
     }
 
     public Conta criarConta(Conta conta){
+        if (conta.getCliente() != null && conta.getCliente().getId() != null) {
+            boolean clienteJaTemConta = contaRepository.existsByClienteId(conta.getCliente().getId());
+            if (clienteJaTemConta) {
+                throw new RuntimeException("Cliente já possui uma conta!");
+            }
+        }
+
         conta.setNumeroDaConta(criarNumeroDaConta());
         return contaRepository.save(conta);
     }
 
-    public void deletarConta(Conta conta) {
-        contaRepository.delete(conta);
+    public void deletarContaPeloId(Long id) {
+        contaRepository.findById(id)
+                .orElseThrow(() -> new ContaNaoEncontrada("A conta com o ID: " + id + " não foi encontrada!"));
+        contaRepository.deleteById(id);
     }
 
     public List<Conta> listarContas() {
         return contaRepository.findAll();
+    }
+
+    public Optional<Conta> buscarContaPeloId(Long id) {
+        contaRepository.findById(id)
+                .orElseThrow(() -> new ContaNaoEncontrada("A conta com o ID: " + id + " não foi encontrada!"));
+        return contaRepository.findById(id);
     }
 
 }
