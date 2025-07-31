@@ -1,5 +1,6 @@
 package com.solo_bank.Solo_Bank.entities;
 
+import com.solo_bank.Solo_Bank.enums.TipoTransacao;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,5 +21,6 @@ public class Transacao {
     private Conta pagador;
     private Conta recebedor;
     private List<Transacao> transacoes;
+    private TipoTransacao tipo;
     private BigDecimal valor;
 }
