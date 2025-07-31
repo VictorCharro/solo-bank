@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ContaRepository extends JpaRepository <Conta, Long> {
 
     public Optional<Conta> findByNumeroDaConta(int numeroDaConta);
+    public boolean existsByNumeroDaConta(int numeroDaConta);
 }
