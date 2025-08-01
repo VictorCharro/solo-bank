@@ -31,14 +31,14 @@ public class TransacaoService {
     @Transactional
     public Transacao criarTransacao(Transacao transacao) {
         TipoTransacao tipo = transacao.getTipo();
-        Conta pagador = transacao.getPagador();
-        Conta recebedor = transacao.getRecebedor();
+        Conta pagador = null;
+        Conta recebedor = null;
 
         switch (tipo) {
 
             case DEPOSITO:
-                recebedor = contaRepository.findByNumeroDaConta(transacao.getRecebedor().getNumeroDaConta())
-                        .orElseThrow(() -> new ContaNaoEncontrada("A conta de numero: " + transacao.getRecebedor().getNumeroDaConta() + " não foi encontrada!"));
+                recebedor = contaRepository.findById(transacao.getRecebedor().getId())
+                        .orElseThrow(() -> new ContaNaoEncontrada("A conta com ID: " + transacao.getRecebedor().getId() + " não foi encontrada!"));
 
                 if (transacao.getValor().compareTo(BigDecimal.ZERO) <= 0) {
                     throw new ValorNegativo("O valor a ser depositado deverá ser maior que zero");
@@ -48,22 +48,30 @@ public class TransacaoService {
                 break;
 
             case SAQUE:
-                if (transacao.getValor().compareTo(pagador.getSaldo()) >= 0) {
+                pagador = contaRepository.findById(transacao.getPagador().getId())
+                        .orElseThrow(() -> new ContaNaoEncontrada("A conta com ID: " + transacao.getPagador().getId() + " não foi encontrada!"));
+                if (transacao.getValor().compareTo(pagador.getSaldo()) > 0) {
                     throw new SaldoInsuficiente("O saldo atual é insuficiente para realizar a transação!");
+                }
+                if (transacao.getValor().compareTo(BigDecimal.ZERO) <= 0){
+                    throw new ValorNegativo("O valor do saque deve ser maior que zero!");
                 }
                 pagador.setSaldo(pagador.getSaldo().subtract(transacao.getValor()));
                 contaRepository.save(pagador);
                 break;
 
             case TRANSFERENCIA:
-                recebedor = contaRepository.findByNumeroDaConta(transacao.getRecebedor().getNumeroDaConta())
-                        .orElseThrow(() -> new ContaNaoEncontrada("A conta de numero: " + transacao.getRecebedor().getNumeroDaConta() + " não foi encontrada!"));
+                recebedor = contaRepository.findById(transacao.getRecebedor().getId())
+                        .orElseThrow(() -> new ContaNaoEncontrada("A conta com ID: " + transacao.getRecebedor().getId() + " não foi encontrada!"));
 
-                pagador = contaRepository.findByNumeroDaConta(transacao.getPagador().getNumeroDaConta())
-                        .orElseThrow(() -> new ContaNaoEncontrada("A conta de numero: " + transacao.getPagador().getNumeroDaConta() + " não foi encontrada!"));
+                pagador = contaRepository.findById(transacao.getPagador().getId())
+                        .orElseThrow(() -> new ContaNaoEncontrada("A conta com ID: " + transacao.getPagador().getId() + " não foi encontrada!"));
 
-                if (transacao.getValor().compareTo(pagador.getSaldo()) >= 0) {
+                if (transacao.getValor().compareTo(pagador.getSaldo()) > 0) {
                     throw new SaldoInsuficiente("O saldo atual é insuficiente para realizar a transação!");
+                }
+                if (transacao.getValor().compareTo(BigDecimal.ZERO) <= 0){
+                    throw new ValorNegativo("O valor da transferencia deve ser maior que zero!");
                 }
 
                 pagador.setSaldo(pagador.getSaldo().subtract(transacao.getValor()));
@@ -72,9 +80,7 @@ public class TransacaoService {
                 recebedor.setSaldo(recebedor.getSaldo().add(transacao.getValor()));
                 contaRepository.save(recebedor);
                 break;
-
         }
-
         return transacaoRepository.save(transacao);
     }
 
